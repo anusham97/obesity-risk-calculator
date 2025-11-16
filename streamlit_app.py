@@ -79,48 +79,64 @@ def ai_score_reasoning(score, risk_cat, user_norm_inputs):
     )
     return response.choices[0].message.content
 
-###############################################################################
-# STREAMLIT INPUT UI WITH NHANES-LIKE PROMPTS & EXAMPLES
-###############################################################################
-
-st.title("🧮 Obesity Risk Score Calculator")
+st.title("🩺 Obesity Risk Score Calculator")
 
 with st.form("obesity_form"):
     col1, col2 = st.columns(2)
     with col1:
-        BMI = st.number_input("BMI (kg/m²)", value=29.5, help="Example: 22 = normal, 27 = overweight, 32 = obese")
-        Waist = st.number_input("Waist Circumference (inches)", value=44.0, help="NHANES: measured in inches; Example: 32\" (slim) to 50\" (high).")
-        A1C = st.number_input("A1C (%)", value=5.8, help="Last 3-month blood sugar average: 5.6-6.4 = prediabetes, 6.5+ = diabetes")
-        Trigly = st.number_input("Triglycerides (mg/dL)", value=150.0, help="NHANES: fasting blood value; <150 is normal.")
-        TotChol = st.number_input("Total Cholesterol (mg/dL)", value=185.0, help="Desirable <200, Borderline 200-239, High >240.")
+        BMI = st.number_input(
+            "BMI (kg/m²)", value=29.5, step=0.1,
+            help="Example: 22 = normal, 27 = overweight, 32 = obese"
+        )
+        Waist = st.number_input(
+            "Waist Circumference (inches)", value=44.0, step=0.1,
+            help="Example: 32\" (slim) to 50\" (high)"
+        )
+        A1C = st.number_input(
+            "A1C (%)", value=5.8, step=0.1,
+            help="Three-month blood sugar average"
+        )
+        Trigly = st.number_input(
+            "Triglycerides (mg/dL)", value=150.0, step=5.0,
+            help="<150 is normal"
+        )
+        TotChol = st.number_input(
+            "Total Cholesterol (mg/dL)", value=185.0, step=5.0,
+            help="Desirable <200"
+        )
         Hypertension = st.selectbox(
             "Ever told you have high blood pressure? (BPQ030)", 
             [0, 1], 
             format_func=lambda x: "No" if x == 0 else "Yes",
-            help="NHANES: 1=Yes, 2=No"
+            help="NHANES self-report"
         )
 
     with col2:
-        ALC = st.number_input("Alcohol — # drinks/week", value=3.0, help="NHANES: Times/week you drank alcohol in last year")
+        ALC = st.number_input(
+            "Alcohol — drinks per week", value=3.0, step=0.5,
+            help="General weekly alcohol estimate"
+        )
         FoodSec = st.select_slider(
             "Food Security (FSDHH)", options=[0, 1, 2, 3], value=1,
-            format_func=lambda x: f"{['Full', 'Marginal', 'Low', 'Very Low'][x]} Security",
-            help="NHANES: 0=Full, 3=Very Low"
+            format_func=lambda x: ["Full", "Marginal", "Low", "Very Low"][x] + " Security",
+            help="0=Full, 3=Very Low"
         )
         WeightHist = st.selectbox(
-            "Gained 10+ lbs in past year?", [0,1], 
-            format_func=lambda x: "No" if x==0 else "Yes"
+            "Gained 10+ lbs in past year?", [0, 1],
+            format_func=lambda x: "No" if x == 0 else "Yes"
         )
         Smoking = st.selectbox(
             "Currently smoke?", [0, 1],
-            format_func=lambda x: "No" if x==0 else "Yes",
-            help="NHANES: 1=Every day, 2=Some days, 0/3=Not at all"
+            format_func=lambda x: "No" if x == 0 else "Yes"
         )
         PhysAct = st.number_input(
-            "Weekly Physical Activity (minutes, PAD615)", value=120.0, 
-            help="NHANES: minutes/week doing vigorous activity"
+            "Weekly Physical Activity (minutes)", value=120.0, step=10.0,
+            help="Typical vigorous or moderate activity minutes"
         )
-        HDL = st.number_input("HDL Cholesterol (mg/dL)", value=48.0, help="NHANES: 40–60 typical; higher is better.")
+        HDL = st.number_input(
+            "HDL Cholesterol (mg/dL)", value=48.0, step=1.0,
+            help="Higher is generally better"
+        )
 
     submitted = st.form_submit_button("Calculate My Score")
 
